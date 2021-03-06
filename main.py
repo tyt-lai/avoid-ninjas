@@ -1,17 +1,18 @@
-namespace SpriteKind {
-    export const ninja = SpriteKind.create()
-}
+@namespace
+class SpriteKind:
+    ninja = SpriteKind.create()
 
-sprites.onOverlap(SpriteKind.Player, SpriteKind.ninja, function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
-    info.changeLifeBy(-1)
+def on_on_overlap(sprite, otherSprite):
+    info.change_life_by(-1)
     otherSprite.destroy(effects.disintegrate)
-    scene.cameraShake(4, 500)
-    sprite.say(randomsayings._pickRandom(), 2000)
-})
-function makeEnemy() {
-    
-    info.changeScoreBy(1)
-    evilninja = sprites.create(img`
+    scene.camera_shake(4, 500)
+    sprite.say(randomsayings._pick_random(), 2000)
+sprites.on_overlap(SpriteKind.player, SpriteKind.ninja, on_on_overlap)
+
+def makeEnemy():
+    global evilninja
+    info.change_score_by(1)
+    evilninja = sprites.create(img("""
             ..............ffffff....
                     .............fffffffff..
                     ............fffffffffff.
@@ -36,20 +37,19 @@ function makeEnemy() {
                     ........................
                     ........................
                     ........................
-        `, SpriteKind.ninja)
+        """),
+        SpriteKind.ninja)
     evilninja.vx = 40
     evilninja.vy = 60
     evilninja.y = 0
     evilninja.x = randint(0, 160)
-    evilninja.setBounceOnWall(true)
-}
-
-let evilninja : Sprite = null
-let randomsayings : string[] = []
+    evilninja.set_bounce_on_wall(True)
+evilninja: Sprite = None
+randomsayings: List[str] = []
 randomsayings = ["yete", "chidori", "bruh", "RASAGEAN !"]
-info.setLife(10)
-info.setScore(0)
-let monkeyleftImg = img`
+info.set_life(10)
+info.set_score(0)
+monkeyleftImg = img("""
     . . . . f f f f f . . . . . . . 
         . . . f e e e e e f . . . . . . 
         . . f d d d d e e e f . . . . . 
@@ -66,23 +66,16 @@ let monkeyleftImg = img`
         . f b d f d b f b b f e f f e f 
         . f d d f d d f d d b e f f f f 
         . . f f f f f f f f f f f f f .
-`
-let monkeyRightImg = monkeyleftImg.clone()
-monkeyRightImg.flipX()
-let monkey = sprites.create(monkeyleftImg, SpriteKind.Player)
-controller.moveSprite(monkey, 150, 0)
+""")
+monkeyRightImg = monkeyleftImg.clone()
+monkeyRightImg.flip_x()
+monkey = sprites.create(monkeyleftImg, SpriteKind.player)
+controller.move_sprite(monkey, 100, 0)
 monkey.y = 110
-monkey.setStayInScreen(true)
+monkey.set_stay_in_screen(True)
 makeEnemy()
-scene.setBackgroundColor(2)
-game.onUpdateInterval(2500, function on_update_interval() {
+scene.set_background_color(2)
+
+def on_update_interval():
     makeEnemy()
-})
-info.onLifeZero(function() {
-monkey.say("ooooooooooof", 1000)
-monkey.destroy(effects.disintegrate,500)
-   
-})
-sprites.onDestroyed(SpriteKind.Player, function(sprite: Sprite) {
-    game.over()
-})
+game.on_update_interval(2500, on_update_interval)
